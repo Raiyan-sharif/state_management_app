@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:state_management_app/controllers/cart_controller.dart';
 import 'package:state_management_app/controllers/shopping_controller.dart';
 
 class ShoppingPage extends StatelessWidget {
   final shoppingController = Get.put(ShoppingController());
+  final cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+        backgroundColor: Colors.teal,
         body: SafeArea(
+
           child: Column(
+
             children: [
               Expanded(
                 child: GetX<ShoppingController>(
 
                   builder: (controller) {
                     return ListView.builder(
+                      physics: BouncingScrollPhysics(),
                         itemCount: controller.products.length,
                         itemBuilder: (context, index){
                       return Card(
@@ -46,6 +53,7 @@ class ShoppingPage extends StatelessWidget {
                                 ],
                               ),
                               RaisedButton(onPressed: (){
+                                cartController.addToCart(controller.products[index]);
 
 
                               },
@@ -65,10 +73,41 @@ class ShoppingPage extends StatelessWidget {
 
 
               ),
-              Text('Total amount: '),
+              GetX<CartController>(
+                builder: (controller) {
+                  return Text(
+                    'Total amount: \$ ${controller.totalPrice}',
+                    style: TextStyle(fontSize: 32, color: Colors.white),
+
+                  );
+                }
+              ),
               SizedBox(height: 100,),
             ],
           ),
-        ));
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: (){
+
+          },
+          backgroundColor: Colors.amber,
+
+          icon: Icon(
+            Icons.add_shopping_cart_rounded,
+            color: Colors.black,
+          ),
+          label: GetX<CartController>(
+              builder: (controller) {
+              return Text(
+                controller.count.toString(),
+                style: TextStyle(color: Colors.black, fontSize: 24),
+              );
+            }
+          ),
+        ),
+    );
+
+
+
   }
 }
